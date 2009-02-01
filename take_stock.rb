@@ -1,13 +1,14 @@
 require 'camping'
 require 'camping/ar'
 require 'camping/session'
+require 'yaml'
 
 Camping.goes :TakeStock
 
+require 'take_stock/helpers'
 require 'take_stock/models'
 require 'take_stock/controllers'
 require 'take_stock/views'
-require 'take_stock/helpers'
 
 module TakeStock
   include Camping::Session

@@ -42,7 +42,8 @@ module TakeStock::Controllers
       if invalid_names.empty?
         game = Game.create(:name => input.name)
         users.each do |user|
-          game.players.create(:user_id => user, :data => '')
+          game.players.create(:user_id => user.id,
+                              :joined => (user == @user) ? true : false)
         end
         
         redirect ViewGame, game
@@ -56,11 +57,40 @@ module TakeStock::Controllers
 
   class ViewGame < R '/game/(\d+)'
     def get game_id
+      require_login!
+      
       @game = Game.find(game_id.to_i)
+      @players = @game.players
+
+      if @game.started?
+        render :view_game
+      else
+        render :join_game
+      end
+    end
+  end
+
+  class JoinGame < R '/game/join'
+    def post
+      require_login!
       
+      game = Game.find(input.game_id)
+      player = game.players.find(:first, :conditions => "user_id = #{@user.id}")
+      player.joined = true
+      player.save
       
+      game.start! if game.started?
       
-      render :view_game
+      redirect ViewGame, game
+    end
+  end
+  
+  class StartGame < R '/game/(\d+)/start'
+    def get game_id
+      game = Game.find(game_id)
+      game.start!
+      
+      redirect ViewGame, game
     end
   end
 

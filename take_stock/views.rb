@@ -53,8 +53,42 @@ module TakeStock::Views
     end
   end
 
+  def join_game
+    h2 @game.name
+    
+    h3 'Waiting for players'
+    
+    table do
+      @players.each do |player|
+        tr do
+          td player.name
+          if player.joined
+            td 'Joined'
+          else
+            if player.user == @user
+              td do
+                form :action => R(JoinGame), :method => 'post' do
+                  input :type => 'hidden', :name => 'game_id', :value => @game.id
+                  input :type => 'submit', :name => 'submit', :value => 'Join game'
+                end
+              end
+            else
+              td 'Waiting'
+            end
+          end
+        end
+      end
+    end
+  end
+
   def view_game
     h2 @game.name
+    
+    ul do
+      @players.each do |player|
+        li player.name
+      end
+    end
   end
 
   def login
