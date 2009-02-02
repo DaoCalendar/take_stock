@@ -1,7 +1,6 @@
 require 'camping'
 require 'camping/ar'
 require 'camping/session'
-require 'yaml'
 
 Camping.goes :TakeStock
 
