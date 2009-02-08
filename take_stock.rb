@@ -4,6 +4,7 @@ require 'camping/session'
 
 Camping.goes :TakeStock
 
+require 'take_stock/market_events'
 require 'take_stock/helpers'
 require 'take_stock/models'
 require 'take_stock/controllers'

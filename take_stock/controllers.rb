@@ -61,6 +61,9 @@ module TakeStock::Controllers
       
       @game = Game.find(game_id.to_i)
       @players = @game.players
+      
+      p @game
+      p @players
 
       if @game.started?
         render :view_game
