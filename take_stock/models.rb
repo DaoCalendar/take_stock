@@ -11,7 +11,7 @@ module TakeStock::Models
   class Player < Base
     include SerializedDataAttributes
     extend SerializedDataAttributes::ClassMethods
-    
+
     belongs_to :game
     belongs_to :user
 
@@ -20,7 +20,7 @@ module TakeStock::Models
     def name
       user.name
     end
-    
+
     # hand (shares)
     # stock options
     # saved market events
@@ -30,9 +30,9 @@ module TakeStock::Models
   class Game < Base
     include SerializedDataAttributes
     extend SerializedDataAttributes::ClassMethods
-      
+
     has_many :players
-    
+
     data_attr :shares_draw_pile, :shares_discard_pile
     data_attr :events_draw_pile, :events_discard_pile
     data_attr :stocks
@@ -40,20 +40,20 @@ module TakeStock::Models
     def started?
       players.all? {|i| i.joined? }
     end
-    
+
     def start!
       players.each do |player|
         player.stock_options = 4
       end
-      
+
       prepare_stock_shares!
       generate_market_events!
       prepare_market_events!
     end
-    
+
     def prepare_stock_shares!
       shares_draw_pile = []
-      
+
       # prepare stock starter cards
       self.stocks = TakeStock::Stocks.inject([]) do |n,(stock,_)|
         n << { :stock => stock, :market_values => [1], :splits => 0 }
@@ -72,21 +72,21 @@ module TakeStock::Models
         player.shares << shares_draw_pile.shift if players.size == 6
         player.save
       end
-      
+
       self.shares_draw_pile = shares_draw_pile
       self.shares_discard_pile = []
       save
     end
-    
+
     def generate_market_events!
       events_draw_pile = []
-      
+
       # create event deck
       TakeStock::MarketEvents.each do |market_event|
         market_event.total.times do
           if market_event.per_stock?
             TakeStock::Stocks.each do |stock,_|
-              events_draw_pile << market_event.new(:game_id => id, :stock => stock)              
+              events_draw_pile << market_event.new(:game_id => id, :stock => stock)
             end
           else
             events_draw_pile << market_event.new(:game_id => id)
@@ -99,17 +99,17 @@ module TakeStock::Models
       self.events_discard_pile = []
       save
     end
-    
+
     def prepare_market_events!
       # place market closed event 10th from the bottom
       market_closed, events_draw_pile = self.events_draw_pile.partition {|event| event.class == TakeStock::MarketClosed }
 
       self.events_draw_pile = events_draw_pile[0, events_draw_pile.length - 10] +
-                              market_closed + 
+                              market_closed +
                               events_draw_pile[-10, 10]
       save
     end
-    
+
     # current_player
     # current_action
     # round
@@ -146,7 +146,7 @@ module TakeStock::Models
 
   class Share
     attr_accessor :stock, :value
-    
+
     def initialize(a_stock, a_value)
       @stock = a_stock
       @value = a_value

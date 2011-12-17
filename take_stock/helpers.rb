@@ -8,7 +8,7 @@ module TakeStock
   }
 end
 
-module TakeStock::Helpers  
+module TakeStock::Helpers
   def logged_in?
     !!@state.user_id
   end
@@ -30,12 +30,12 @@ module TakeStock::Models
         base.serialize :data, Hash
       end
     end
-    
+
     def data
       read_attribute(:data) || write_attribute(:data, Hash.new)
     end
-  
-    module ClassMethods  
+
+    module ClassMethods
       def data_attr_reader *attributes
         attributes.each do |attribute|
           class_eval "def #{attribute}; data[:#{attribute}]; end"
