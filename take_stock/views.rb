@@ -30,34 +30,34 @@ module TakeStock::Views
     end
     a 'Create new game', :href => R(CreateGame)
   end
-  
+
   def create_game
     h2 'Create Game'
     p.info @info if @info
-    
+
     form :action => R(CreateGame), :method => 'post' do
       label 'name', :for => 'name'
       input :name => 'name', :id => 'name'
-      
+
       label 'Player 1', :for => 'players[1]'
       input :name => 'players[1]', :id => 'players[1]',
             :value => @user.name, :readonly => true
-            
+
       (2..5).each do |i|
         label "Player #{i}", :for => "players[#{i}]"
         input :name => "players[#{i}]", :id => "players[#{i}]",
               :value => @players[i]
       end
-      
+
       input :type => 'submit', :class => 'submit', :value => 'Create Game'
     end
   end
 
   def join_game
     h2 @game.name
-    
+
     h3 'Waiting for players'
-    
+
     table do
       @players.each do |player|
         tr do
@@ -83,7 +83,7 @@ module TakeStock::Views
 
   def view_game
     h2 @game.name
-    
+
     ul do
       @players.each do |player|
         li player.name
